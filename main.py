@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 import models, schemas
 from database import engine, SessionLocal, Base
 from routes import football
-from routes import Basketball   # ✅ lowercase
+from routes import Basketball  # ✅ make sure your file is named `Basketball.py`
 
 # ✅ Step 1: Create FastAPI app
 app = FastAPI(title="Sports Predictions API")
@@ -15,22 +15,27 @@ app = FastAPI(title="Sports Predictions API")
 app.include_router(football.router, prefix="/football", tags=["Football"])
 app.include_router(Basketball.router, prefix="/basketball", tags=["Basketball"])
 
-# ✅ Step 3: Create DB tables
+# ✅ Step 3: Create DB tables (only if not exists)
 Base.metadata.create_all(bind=engine)
 
 # ✅ Step 4: Add CORS middleware
+origins = [
+    "https://bettingbot.netlify.app",  # your frontend on Netlify
+    "http://localhost:5173",           # local dev frontend (Vite default port)
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # ⚠️ In production restrict to frontend URL
+    allow_origins=origins,      # only allow these domains
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],        # allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],        # allow all headers
 )
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Dependency (DB session)
+# ✅ Dependency: DB session
 def get_db():
     db = SessionLocal()
     try:

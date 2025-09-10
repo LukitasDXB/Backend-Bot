@@ -1,0 +1,12 @@
+# Ignore database files
+*.db
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+.venv/
+venv/
+env/
+ENV/
